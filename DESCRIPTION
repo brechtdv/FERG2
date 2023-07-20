@@ -1,0 +1,11 @@
+Package: FERG2
+Title: Data and Functions for the FERG2 Computational Framework
+Version: 0.0.1
+Date: 2023-07-20
+Authors@R: person("Brecht", "Devleesschauwer", role = c("aut", "cre"),
+	              email = "brechtdv@gmail.com")
+Author: Brecht Devleesschauwer [aut, cre]
+Maintainer: Brecht Devleesschauwer <brechtdv@gmail.com>
+Description: A series of data inputs and helper functions for the FERG2 computational framework.
+Depends: R (>= 4.2.0)
+License: GPL-3
