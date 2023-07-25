@@ -15,7 +15,7 @@ The \pkg{FERG2} package provides a series of data inputs and helper functions fo
     Package:    \tab  FERG2\cr
     Type:       \tab  Package\cr
     Version:    \tab  0.0.1\cr
-    Date:       \tab  2023-07-20\cr
+    Date:       \tab  2023-07-25\cr
     Authors:    \tab  Brecht Devleesschauwer\cr
     Maintainer: \tab  Brecht Devleesschauwer <\email{brechtdv@gmail.com}>\cr
     Depends:    \tab  R (>= 4.2.0)\cr
@@ -24,10 +24,11 @@ The \pkg{FERG2} package provides a series of data inputs and helper functions fo
 
 Available functions in the \pkg{FERG2} package:
 
-}
 
 Available datasets in the \pkg{FERG2} package:
-
+  \tabular{ll}{
+    \code{\link{countries}} \tab WHO member states: names, ISO3 codes, ISO2 codes, WHO regions, FERG2 subregions, FERG1 subregions.\cr
+  }
 }
 
 \keyword{package}
