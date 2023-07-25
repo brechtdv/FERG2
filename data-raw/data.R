@@ -17,4 +17,5 @@ map3 <- st_read("shp/maskpoly_general_2013.shp")
 
 save(
   countries,
+  map1, map2, map3,
   file = "../R/sysdata.rda")
