@@ -40,9 +40,9 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
       legend.labs <- levels(cat)
 
   } else {
-    x[[data]] <- as.factor(x[[data]])
+    map1$DATA <- as.factor(map1$DATA)
     if (length(col.pal) == 1) {
-      col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
+      col <- RColorBrewer::brewer.pal(nlevels(map1$DATA), col.pal)
     } else {
       col <- col.pal
     }
