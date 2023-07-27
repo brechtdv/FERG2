@@ -4,7 +4,8 @@
 
 plot_world <-
 function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
-  legend.labs = NULL, legend.title = NULL, legend.ncol = 3) {
+  legend.labs = NULL, legend.title = NULL, legend.ncol = 3,
+  integer.breaks = FALSE) {
   # check arguments
   if (!(iso3 %in% names(x)))
     stop(sprintf("Input 'x' requires '%s' variable.", iso3))
@@ -22,10 +23,14 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
 
   # define colors
   if (is.numeric(x[[data]])) {
-    breaks <- pretty(map1$DATA)
-    cat <- cut(map1$DATA, breaks)
+    if (integer.breaks) {
+	  breaks <- unique(floor(pretty(map1$DATA)))
+	} else {
+	  breaks <- pretty(map1$DATA)
+	}
+	cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
     if (length(col.pal) == 1) {
-      col <- RColorBrewer::brewer.pal(length(levels(cat)), col.pal)
+      col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
     } else {
       col <- col.pal
     }
@@ -37,7 +42,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
   } else {
     x[[data]] <- as.factor(x[[data]])
     if (length(col.pal) == 1) {
-      col <- RColorBrewer::brewer.pal(length(levels(cat)), col.pal)
+      col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
     } else {
       col <- col.pal
     }
@@ -68,4 +73,108 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     fill = c(col, col_na),
     cex = .9, y.intersp = .9, x.intersp = 0.5, text.width = 20,
     ncol = legend.ncol)
+}
+
+## number of data points per country
+
+plot_world_data <-
+function(x, legend.ncol = 1, ...) {
+  world <- countries
+  world <- merge(all = TRUE, world, data.frame(xtabs(~ISO3, dta)))
+  world$Freq[!is.na(world$Freq)] <- rpois(sum(!is.na(world$Freq)), 6)
+  world$Freq[is.na(world$Freq)] <- 0
+
+  max_freq <- max(world$Freq, na.rm = TRUE)
+  if (max_freq < 10) {
+    world$Freq <-
+      factor(world$Freq, levels = seq(0, max_freq))
+    col.pal <- RColorBrewer::brewer.pal(max_freq, "Greens")
+    col.pal <- c("white", col.pal)
+    col.pal <- col.pal[seq(max_freq+1)]
+    plot_world(
+      world, iso3 = "ISO3", data = "Freq",
+      col.pal = col.pal, legend.ncol = ifelse(max_freq<=5, 1, 2), ...)
+
+  } else {
+    breaks <- pretty(world$Freq[world$Freq != 0])
+    if (breaks[1] == 0) breaks[1] <- 1
+    col.pal <- RColorBrewer::brewer.pal(length(breaks)-1, "Greens")
+    col.pal <- c("white", col.pal)
+    legend.labs <-
+      c(0, levels(cut(world$Freq, breaks, right=F, include.lowest=T)))
+    plot_world(
+      world, iso3 = "ISO3", data = "Freq",
+      col.pal = col.pal, legend.labs = legend.labs, ...)
+  }
+}
+
+## imputation map
+
+plot_world_imputation <-
+function(x, ...) {
+  world <- countries
+  world$col <- "red"
+  has_sub <- unique(world$SUB2[world$ISO3 %in% x$ISO3])
+  world$col[world$SUB2 %in% has_sub] <- "orange"
+  world$col[world$ISO3 %in% x$ISO3] <- "green"
+  world$col <- factor(world$col, levels = c("green", "orange", "red"))
+
+  plot_world(world, iso3 = "ISO3", data = "col",
+    col.pal = c("green", "orange", "red"),
+    legend.ncol = 1, legend.labs =
+      c("Data in country", "Data in subregion", "No data in subregion"), ...)
+}
+
+## plot data availability
+
+plot_data <-
+function(x, by = c("REGION", "SUBREGION", "COUNTRY"), range = NULL) {
+  # check arguments
+  by <- match.arg(by)
+
+  # set variables
+  x$YEAR <- round(x$YEAR)
+  x$LOCATION <- x[[by]]
+
+  # set range
+  if (is.null(range)) range <- range(x$YEAR)
+  x <- subset(x, YEAR >= min(range) & YEAR <= max(range))
+
+  # count entries by year and location
+  count <- xtabs(~YEAR+LOCATION, x)
+  count <- as.data.frame(count, stringsAsFactors = FALSE)
+
+  # find all locations
+  all_locations <-
+  switch(by,
+         "REGION" = unique(countries$REG),
+         "SUBREGION" = unique(countries$SUB2),
+         "COUNTRY" = countries$ISO3)
+
+  # expand dataframe to make complete
+  count <- merge(all = TRUE,
+    count,
+    expand.grid(YEAR = seq(min(range), max(range)),
+                LOCATION = all_locations))
+  count$Freq[count$Freq == 0] <- NA
+
+  # plot
+  n_breaks <- min(5, max(count$Freq, na.rm = TRUE))
+  ggplot(count, aes(x = YEAR, y = LOCATION)) +
+    geom_tile(
+      aes(fill = Freq),
+      linewidth = 0.5, color = "#cccccc") +
+    scale_fill_distiller(
+      "Count",
+      direction = 1,
+      na.value = NA,
+      breaks = scales::breaks_extended(n = n_breaks)) +
+    scale_x_discrete(NULL) +
+    scale_y_discrete(NULL, limits = rev(sort(all_locations))) +
+    theme_classic() +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.line = element_blank(),
+      axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 }
