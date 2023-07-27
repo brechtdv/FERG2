@@ -1,1 +1,4 @@
 export(plot_world)
+export(plot_world_data)
+export(plot_world_imputation)
+export(plot_data)
