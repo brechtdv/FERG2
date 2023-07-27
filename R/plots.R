@@ -34,7 +34,8 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     if (is.null(legend.labs))
       legend.labs <- levels(cat)
 
-  } else if (is.factor(x[[data]])) {
+  } else {
+    x[[data]] <- as.factor(x[[data]])
     if (length(col.pal) == 1) {
       col <- RColorBrewer::brewer.pal(length(levels(cat)), col.pal)
     } else {
