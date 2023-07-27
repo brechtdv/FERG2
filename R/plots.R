@@ -124,6 +124,34 @@ function(x, ...) {
       c("Data in country", "Data in subregion", "No data in subregion"), ...)
 }
 
+## plot FERG1 subregions
+
+plot_world_sub1 <-
+function() {
+  col.pal <-
+    c(RColorBrewer::brewer.pal(4, "Oranges")[3:4],
+      RColorBrewer::brewer.pal(4, "Reds")[-1],
+      RColorBrewer::brewer.pal(4, "Greys")[3:4],
+      RColorBrewer::brewer.pal(4, "Blues")[-1],
+      RColorBrewer::brewer.pal(4, "Greens")[3:4],
+      RColorBrewer::brewer.pal(4, "Purples")[3:4])
+  plot_world(countries, "ISO3", "SUB1", col.pal = col.pal)
+}
+
+## plot FERG2 subregions
+
+plot_world_sub2 <-
+function() {
+  col.pal <-
+    c(RColorBrewer::brewer.pal(4, "Oranges")[-1],
+      RColorBrewer::brewer.pal(4, "Reds")[-1],
+      RColorBrewer::brewer.pal(4, "Greys")[-1],
+      RColorBrewer::brewer.pal(4, "Blues")[-1],
+      RColorBrewer::brewer.pal(4, "Greens")[3:4],
+      RColorBrewer::brewer.pal(4, "Purples")[-1])
+  plot_world(countries, "ISO3", "SUB2", col.pal = col.pal)
+}
+
 ## plot data availability
 
 plot_data <-
