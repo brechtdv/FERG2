@@ -81,7 +81,6 @@ plot_world_data <-
 function(x, legend.ncol = 1, ...) {
   world <- countries
   world <- merge(all = TRUE, world, data.frame(xtabs(~ISO3, dta)))
-  world$Freq[!is.na(world$Freq)] <- rpois(sum(!is.na(world$Freq)), 6)
   world$Freq[is.na(world$Freq)] <- 0
 
   max_freq <- max(world$Freq, na.rm = TRUE)
@@ -128,7 +127,7 @@ function(x, ...) {
 ## plot data availability
 
 plot_data <-
-function(x, by = c("REGION", "SUBREGION", "COUNTRY"), range = NULL) {
+function(x, by = c("REG2", "REG1", "SUB2", "SUB1", "COUNTRY"), range = NULL) {
   # check arguments
   by <- match.arg(by)
 
@@ -147,8 +146,10 @@ function(x, by = c("REGION", "SUBREGION", "COUNTRY"), range = NULL) {
   # find all locations
   all_locations <-
   switch(by,
-         "REGION" = unique(countries$REG),
-         "SUBREGION" = unique(countries$SUB2),
+         "REG2" = unique(countries$REG),
+         "REG1" = unique(gsub(".$", "", FERG2:::countries$SUB1)),
+         "SUB2" = unique(countries$SUB2),
+         "SUB1" = unique(countries$SUB1),
          "COUNTRY" = countries$ISO3)
 
   # expand dataframe to make complete
