@@ -110,11 +110,13 @@ function(x, legend.ncol = 1, ...) {
 ## imputation map
 
 plot_world_imputation <-
-function(x, ...) {
+function(x, sub = c("SUB2", "SUB1"), ...) {
+  sub <- match.arg(sub)
+  
   world <- countries
   world$col <- "red"
-  has_sub <- unique(world$SUB2[world$ISO3 %in% x$ISO3])
-  world$col[world$SUB2 %in% has_sub] <- "orange"
+  has_sub <- unique(world[[sub]][world$ISO3 %in% x$ISO3])
+  world$col[world[[sub]] %in% has_sub] <- "orange"
   world$col[world$ISO3 %in% x$ISO3] <- "green"
   world$col <- factor(world$col, levels = c("green", "orange", "red"))
 
@@ -174,8 +176,8 @@ function(x, by = c("REG2", "REG1", "SUB2", "SUB1", "COUNTRY"), range = NULL) {
   # find all locations
   all_locations <-
   switch(by,
-         "REG2" = unique(countries$REG),
-         "REG1" = unique(gsub(".$", "", FERG2:::countries$SUB1)),
+         "REG2" = unique(countries$REG2),
+         "REG1" = unique(countries$REG1),
          "SUB2" = unique(countries$SUB2),
          "SUB1" = unique(countries$SUB1),
          "COUNTRY" = countries$ISO3)
