@@ -1,4 +1,6 @@
 export(plot_world)
 export(plot_world_data)
 export(plot_world_imputation)
+export(plot_world_sub1)
+export(plot_world_sub2)
 export(plot_data)
