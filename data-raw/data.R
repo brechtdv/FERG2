@@ -7,7 +7,7 @@
 library(bd)
 library(sf)
 library(tidyr)
-
+library(dplyr)
 ## country definitions
 countries <- readxl("WHO_countries_subregions.xlsx")
 
