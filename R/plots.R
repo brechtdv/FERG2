@@ -23,12 +23,21 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
 
   # define colors
   if (is.numeric(x[[data]])) {
-    if (integer.breaks) {
-	  breaks <- unique(floor(pretty(map1$DATA)))
-	} else {
-	  breaks <- pretty(map1$DATA)
-	}
-	cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+    if (is.null(breaks)) {
+      if (integer.breaks) {
+        breaks <- unique(floor(pretty(map1$DATA)))
+        cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+      } else {
+        breaks <- pretty(map1$DATA)
+        cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+      }
+    }
+    else {
+      cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+      levels(cat)<-c(levels(cat),"0") 
+      cat[map1$DATA==0]<-"0"
+    }
+    
     if (length(col.pal) == 1) {
       col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
     } else {
@@ -98,12 +107,12 @@ function(x, legend.ncol = 1, ...) {
     breaks <- pretty(world$Freq[world$Freq != 0])
     if (breaks[1] == 0) breaks[1] <- 1
     col.pal <- RColorBrewer::brewer.pal(length(breaks)-1, "Greens")
-    col.pal <- c("white", col.pal)
+    col.pal <- c( col.pal,"white")
     legend.labs <-
-      c(0, levels(cut(world$Freq, breaks, right=F, include.lowest=T)))
+      c(levels(cut(world$Freq, breaks, right=F, include.lowest=T)),0)
     plot_world(
       world, iso3 = "ISO3", data = "Freq",
-      col.pal = col.pal, legend.labs = legend.labs, ...)
+      col.pal = col.pal, legend.labs = legend.labs,breaks=breaks, ...)
   }
 }
 
