@@ -89,7 +89,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
 plot_world_data <-
 function(x, legend.ncol = 1, ...) {
   world <- countries
-  world <- merge(all = TRUE, world, data.frame(xtabs(~ISO3, dta)))
+  world <- merge(all = TRUE, world, data.frame(xtabs(~ISO3, x)))
   world$Freq[is.na(world$Freq)] <- 0
 
   max_freq <- max(world$Freq, na.rm = TRUE)
