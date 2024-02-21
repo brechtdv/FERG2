@@ -1,8 +1,10 @@
 
 #Function which take a data frame as imput and return the data frame with corresponding population
-#add the name of the variable as argument? add warning message regarding ISO3 variable
 add_pop<-function(df){
-  sub<-pop[c(1,2,5)]
+  tot<-pop%>%group_by(ISO3,YEAR,AGE)%>% 
+    summarise(POP=sum(POP))%>% 
+    mutate(SEX="All sexes")%>%
+    bind_rows(pop,.)
   #Check arguments 
   if (!("ISO3" %in% names(df)))
     stop("The input must contain a variable named ISO3")
@@ -10,15 +12,22 @@ add_pop<-function(df){
     stop("The input must contain a variable named REF_YEAR_START")
   if (!("REF_YEAR_END" %in% names(df)))
     stop("The input must contain a variable named REF_YEAR_END")
+  if (!("REF_AGE_START" %in% names(df)))
+    stop("The input must contain a variable named REF_AGE_START")
+  if (!("REF_AGE_END" %in% names(df)))
+    stop("The input must contain a variable named REF_AGE_END")
+  if (!("REF_SEX" %in% names(df)))
+    stop("The input must contain a variable named REF_SEX")
   #Add the population information
-  by<-join_by(ISO3, REF_YEAR_START<=YEAR, REF_YEAR_END>=YEAR)
-  x<- left_join(df,sub, by)%>%
-    group_by(ISO3,REF_YEAR_START, REF_YEAR_END)%>%
+  by<-join_by(ISO3, REF_SEX==SEX, REF_YEAR_START<=YEAR, REF_YEAR_END>=YEAR,
+              REF_AGE_START<=AGE, REF_AGE_END>=AGE)
+  x<- left_join(df,tot, by)%>%
+    group_by(ISO3,REF_YEAR_START, REF_YEAR_END, REF_AGE_START, REF_AGE_END, REF_SEX)%>%
     summarise(POP=sum(POP))
   df<-left_join(df,x)
-  rm(list=c("sub","by","x"))
+  rm(list=c("tot","by","x"))
   n<-sum(is.na(df$POP))
   if(n>0)
     warning(paste("Warning:", n, " rows have missing data for the population variable. Please check if ISO3 code is correctly specified and if the dates are included in the study field."))
-  return(df)}
+  return(df)} 
 
