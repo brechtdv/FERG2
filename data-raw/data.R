@@ -8,12 +8,16 @@ library(bd)
 library(sf)
 library(tidyr)
 library(dplyr)
+
 ## country definitions
 countries <- readxl("WHO_countries_subregions.xlsx")
 
 ## UN WPP population data
+## 1950-2021 only available on Brecht laptop
+if (FALSE) {
 pop <-
   read.csv("WPP2022_Population1JanuaryBySingleAgeSex_Medium_1950-2021.csv")
+
 pop <- subset(pop, ISO3_code %in% countries$ISO3)
 pop <- subset(pop, Time >= 1990)
 pop <- subset(pop,
@@ -28,6 +32,15 @@ pivot_longer(
 names(pop) <- c("ISO3", "YEAR", "AGE", "SEX", "POP")
 pop$POP <- pop$POP*1000
 class(pop) <- "data.frame"
+str(pop)
+
+write.csv(pop,
+  row.names = FALSE,
+  file = "WPP2022_Population1JanuaryBySingleAgeSex_Medium_1990-2021.csv")
+}
+
+pop <-
+  read.csv("WPP2022_Population1JanuaryBySingleAgeSex_Medium_1990-2021.csv")
 str(pop)
 
 ## WHO shapefiles
