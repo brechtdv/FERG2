@@ -5,7 +5,7 @@
 plot_world <-
 function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
   legend.labs = NULL, legend.title = NULL, legend.ncol = 3,
-  integer.breaks = FALSE) {
+  integer.breaks = FALSE, breaks = NULL) {
   # check arguments
   if (!(iso3 %in% names(x)))
     stop(sprintf("Input 'x' requires '%s' variable.", iso3))
