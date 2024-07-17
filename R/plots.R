@@ -132,7 +132,7 @@ function(x, legend.ncol = 1, ...) {
     legend.labs <- c(levels(cut(world$Freq, breaks, right = F, 
                                 include.lowest = T))) 
     legend.labs[1] <- "0" 
-    plotworld(world, iso3 = "ISO3", data = "Freq", col.pal = col.pal, 
+    plot_world(world, iso3 = "ISO3", data = "Freq", col.pal = col.pal, 
               legend.labs = legend.labs, breaks = breaks, ...) #plot map
   }
 }
