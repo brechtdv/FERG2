@@ -5,7 +5,7 @@
 plot_world <-
 function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
   legend.labs = NULL, legend.title = NULL, legend.ncol = 3,
-  integer.breaks = FALSE, breaks = NULL) {
+  integer.breaks = FALSE, breaks = NULL, diseasefree = NULL)  {
   # check arguments
   if (!(iso3 %in% names(x)))
     stop(sprintf("Input 'x' requires '%s' variable.", iso3))
@@ -34,15 +34,30 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     }
     else {
       cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
-      levels(cat)<-c(levels(cat),"0") 
-      cat[map1$DATA==0]<-"0"
     }
     
-    if (length(col.pal) == 1) {
-      col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
-    } else {
-      col <- col.pal
+    # Add disease-free countries if asked
+    if(!is.null(diseasefree)){
+      map1$DISEASEFREE <- diseasefree[["DISEASEFREE"]][match(map1$ISO_3_CODE, diseasefree[["COUNTRY"]])]
+      levels(cat) <- c(levels(cat), "Disease-free")
+      cat[map1$DISEASEFREE == 0] <- "Disease-free"
+      if (length(col.pal) == 1) {
+        col <- RColorBrewer::brewer.pal(nlevels(cat)-1, col.pal)
+        col <- c(col, "white")
+      }
+      else {
+        col <- col.pal
+      }
     }
+    else {
+      if (length(col.pal) == 1) {
+        col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
+      }
+      else {
+        col <- col.pal
+      }
+    }
+    
     cols <- col[cat]
     
     if (is.null(legend.labs))
@@ -82,6 +97,9 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     fill = c(col, col_na),
     cex = .9, y.intersp = .9, x.intersp = 0.5, text.width = 20,
     ncol = legend.ncol)
+  
+  #  return breaks
+  return(breaks)
 }
 
 ## number of data points per country
@@ -104,15 +122,18 @@ function(x, legend.ncol = 1, ...) {
       col.pal = col.pal, legend.ncol = ifelse(max_freq<=5, 1, 2), ...)
 
   } else {
-    breaks <- pretty(world$Freq[world$Freq != 0])
-    if (breaks[1] == 0) breaks[1] <- 1
-    col.pal <- RColorBrewer::brewer.pal(length(breaks)-1, "Greens")
-    col.pal <- c( col.pal,"white")
-    legend.labs <-
-      c(levels(cut(world$Freq, breaks, right=F, include.lowest=T)),0)
-    plot_world(
-      world, iso3 = "ISO3", data = "Freq",
-      col.pal = col.pal, legend.labs = legend.labs,breaks=breaks, ...)
+    breaks <- pretty(world$Freq[world$Freq != 0]) 
+    if (breaks[1] == 0) 
+      breaks[1] <- 1
+    breaks <- c(0, breaks) 
+    col.pal <- RColorBrewer::brewer.pal(length(breaks) - 
+                                          2, "Greens") 
+    col.pal <- c("white", col.pal) 
+    legend.labs <- c(levels(cut(world$Freq, breaks, right = F, 
+                                include.lowest = T))) 
+    legend.labs[1] <- "0" 
+    plotworld(world, iso3 = "ISO3", data = "Freq", col.pal = col.pal, 
+              legend.labs = legend.labs, breaks = breaks, ...) #plot map
   }
 }
 
