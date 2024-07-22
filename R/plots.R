@@ -75,6 +75,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     if (is.null(legend.labs))
       legend.labs <- levels(map1$DATA)
   }
+  legend.labs <- gsub(",", ", ", legend.labs, fixed=TRUE)
   cols[is.na(cols)] <- col_na
 
   # setup plot
