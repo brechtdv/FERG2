@@ -106,7 +106,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
 ## number of data points per country
 
 plot_world_data <-
-function(x, legend.ncol = 1, text.width=20, title.adj=0.5...) {
+function(x, legend.ncol = 1, text.width=20, title.adj=0.5, ...) {
   world <- countries
   world <- merge(all = TRUE, world, data.frame(xtabs(~ISO3, x)))
   world$Freq[is.na(world$Freq)] <- 0
