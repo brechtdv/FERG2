@@ -4,7 +4,7 @@
 
 plot_world <-
 function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
-  legend.labs = NULL, legend.title = NULL, legend.ncol = 3,
+  legend.labs = NULL, legend.title = NULL, legend.ncol = 3, title.adj=0.5,
   text.width = 20, integer.breaks = FALSE, breaks = NULL, diseasefree = NULL)  {
   # check arguments
   if (!(iso3 %in% names(x)))
@@ -97,7 +97,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     legend = c(legend.labs, "Not applicable"),
     fill = c(col, col_na),
     cex = .9, y.intersp = .9, x.intersp = 0.5, text.width = text.width,
-    ncol = legend.ncol)
+    ncol = legend.ncol, title.adj=title.adj)
   
   #  return breaks
   return(breaks)
@@ -106,7 +106,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
 ## number of data points per country
 
 plot_world_data <-
-function(x, legend.ncol = 1, text.width=20, ...) {
+function(x, legend.ncol = 1, text.width=20, title.adj=0.5...) {
   world <- countries
   world <- merge(all = TRUE, world, data.frame(xtabs(~ISO3, x)))
   world$Freq[is.na(world$Freq)] <- 0
@@ -134,7 +134,8 @@ function(x, legend.ncol = 1, text.width=20, ...) {
                                 include.lowest = T))) 
     legend.labs[1] <- "0" 
     plot_world(world, iso3 = "ISO3", data = "Freq", col.pal = col.pal,
-               text.width = text.width, legend.labs = legend.labs, breaks = breaks, ...) #plot map
+               text.width = text.width, legend.labs = legend.labs, 
+               breaks = breaks, title.adj=title.adj, ...) #plot map
   }
 }
 
