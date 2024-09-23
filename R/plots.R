@@ -141,21 +141,31 @@ function(x, legend.ncol = 1, text.width=20, title.adj=0.5, ...) {
 
 ## imputation map
 
-plot_world_imputation <-
-function(x, sub = c("SUB2", "SUB1"), ...) {
+plot_world_imputation <- function (x, sub = c("SUB2", "SUB1"), ...) {
   sub <- match.arg(sub)
-  
+  if (sub == "SUB2"){
+    reg <- "REG2"
+  } else {
+    reg <- "REG1"
+  }
   world <- countries
-  world$col <- "red"
+  world$col <- "firebrick2"
+  has_reg <- unique(world[[reg]][world$ISO3 %in% x$ISO3])
   has_sub <- unique(world[[sub]][world$ISO3 %in% x$ISO3])
-  world$col[world[[sub]] %in% has_sub] <- "orange"
-  world$col[world$ISO3 %in% x$ISO3] <- "green"
-  world$col <- factor(world$col, levels = c("green", "orange", "red"))
-
-  plot_world(world, iso3 = "ISO3", data = "col",
-    col.pal = c("green", "orange", "red"),
-    legend.ncol = 1, legend.labs =
-      c("Data in country", "Data in subregion", "No data in subregion"), ...)
+  world$col[world[[reg]] %in% has_reg] <- "darkorange"
+  world$col[world[[sub]] %in% has_sub] <- "gold1"
+  world$col[world$ISO3 %in% x$ISO3] <- "darkolivegreen3"
+  world$col <- factor(world$col, levels = c("darkolivegreen3", "gold1", 
+                                            "darkorange","firebrick2"))
+  plot_world(world, 
+             iso3 = "ISO3", 
+             data = "col", 
+             col.pal = c("darkolivegreen3", "gold1", "darkorange","firebrick2"), 
+             legend.ncol = 1, 
+             legend.labs = c("Data in country",
+                             "Data in subregion", 
+                             "Data in region",
+                             "No data in region"),...)
 }
 
 ## plot FERG1 subregions
