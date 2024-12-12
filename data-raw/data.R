@@ -77,9 +77,35 @@ life_exp <- LE
 
 write.csv(life_exp,
           row.names = FALSE,
-          file = "WHO_life_expectancY_AGE_1990_2023.csv")
+          file = "WHO_life_expectancy_AGE_1990_2023.csv")
 
+LB <-
+  read_excel("WPP2024_FERT_F03_BIRTHS_BY_SINGLE_AGE_OF_MOTHER.xlsx", skip=16, col_types = "text")
+LB <- LB %>%
+  rename(ISO3 = `ISO3 Alpha-code`)
+LB <- subset(LB, ISO3 %in% countries$ISO3)
+LB <- subset(LB, Year >= 1990)
+LB <- subset(LB,
+             select = -c(Index, Variant, `Region, subregion, country or area *`, Notes, `Location code`,
+                         `ISO2 Alpha-code`, `SDMX code**`, `Type`, `Parent code`))
+colnames(LB) <- paste("A", colnames(LB), sep = "_")
+LB <- LB %>%
+  rename(ISO3 = A_ISO3, 
+         YEAR = A_Year)
+LB <- 
+  pivot_longer(
+    LB,
+    cols = starts_with("A_"),
+    names_to = "AGE",
+    values_to = "LB")
 
+LB$AGE <- sub(".*_", "", LB$AGE)
+LB$LB <- as.numeric(LB$LB)*1e3
+life_birth <- LB
+
+write.csv(life_birth,
+          row.names = FALSE,
+          file = "WHO_birth_by_age_mother_1990_2023.csv")
 
 ## WHO shapefiles
 map1 <- st_read("shp/general_2013.shp")
@@ -90,8 +116,12 @@ map3 <- st_read("shp/maskpoly_general_2013.shp")
 ### SAVE DATA
 ###
 
+# countries <- FERG2:::countries
+# pop <- FERG2:::pop
+# life_exp <- FERG2:::life_exp
+
 save(
   countries,
-  pop, life_exp,
+  pop, life_exp,life_birth,
   map1, map2, map3,
   file = "../R/sysdata.rda")
