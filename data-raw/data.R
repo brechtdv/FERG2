@@ -148,6 +148,13 @@ colnames(pop_IHME) <- c("ISO3", "YEAR", "AGE", "SEX", "POP")
 
 pop_1year <- pop_IHME
 pop_1year <- pop_1year[order(pop_1year$ISO3, pop_1year$YEAR, pop_1year$AGE, pop_1year$SEX), ] 
+class(pop_1year) <- "data.frame"
+rownames(pop_1year) <- NULL
+str(pop_1year)
+
+write.csv(pop_1year,
+          row.names = FALSE,
+          file = "IHME_pop_1y_1990_2021.csv")
 
 ## WHO shapefiles
 map1 <- st_read("shp/general_2013.shp")
