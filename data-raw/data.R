@@ -169,6 +169,7 @@ map3 <- st_read("shp/maskpoly_general_2013.shp")
 # pop <- FERG2:::pop
 # life_exp <- FERG2:::life_exp
 # life_birth <- FERG2:::life_birth
+# pop_1year <- FERG2:::pop_1year
 
 save(
   countries, pop, pop_1year,
