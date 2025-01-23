@@ -2,6 +2,9 @@
 ### .. country definitions
 ### .. UN WPP population estimates
 ### .. WHO worldmap shapefiles
+### .. IHME population estimates for <1y
+### .. UN life expectancy
+### .. UN life birth
 
 ## required packages
 library(bd)
@@ -78,7 +81,7 @@ life_exp <- LE
 write.csv(life_exp,
           row.names = FALSE,
           file = "WHO_life_expectancy_AGE_1990_2023.csv")
-
+## UN WPP life birth data
 LB <-
   read_excel("WPP2024_FERT_F03_BIRTHS_BY_SINGLE_AGE_OF_MOTHER.xlsx", skip=16, col_types = "text")
 LB <- LB %>%
@@ -107,6 +110,45 @@ write.csv(life_birth,
           row.names = FALSE,
           file = "WHO_birth_by_age_mother_1990_2023.csv")
 
+## IHME population data <1
+pop_IHME_1 <-
+  read.csv("IHME-GBD_2021_DATA_1990_2001_M.csv")
+pop_IHME_2 <-
+  read.csv("IHME-GBD_2021_DATA-2002_2013_M.csv")
+pop_IHME_3 <-
+  read.csv("IHME-GBD_2021_DATA-2014_2021_F.csv")
+pop_IHME_4 <-
+  read.csv("IHME-GBD_2021_DATA_1990_2001_F.csv")
+pop_IHME_5 <-
+  read.csv("IHME-GBD_2021_DATA-2002_2013_F.csv")
+pop_IHME_6 <-
+  read.csv("IHME-GBD_2021_DATA-2014_2021_M.csv")
+pop_IHME <- rbind(pop_IHME_1, pop_IHME_2, pop_IHME_3,
+                  pop_IHME_4, pop_IHME_5, pop_IHME_6)
+pop_IHME <- pop_IHME[,c("location_name", "sex_name", "age_name","year", "val")]
+
+pop_IHME <- pop_IHME %>%
+  mutate(COUNTRY = case_when(
+    location_name == "Türkiye" ~ "Turkiye",
+    location_name == "Congo" ~ "Congo (the)",
+    location_name == "Democratic Republic of the Congo" ~ "Congo (the Democratic Republic of the)",
+    location_name == "Dominican Republic" ~ "Dominican Republic (the)",
+    location_name == "Gambia" ~ "Gambia (the)",
+    location_name == "Lao People's Democratic Republic" ~ "Lao People's Dem. Republic",
+    location_name == "Micronesia (Federated States of)" ~ "Micronesia (Fed. States of)",
+    location_name == "Democratic People's Republic of Korea" ~ "Korea (the Democratic People's Republic of)",
+    location_name == "Republic of Korea" ~ "Korea (the republic of)",
+    .default = location_name
+  ))
+
+pop_IHME <- subset(pop_IHME, COUNTRY %in% countries$COUNTRY)
+pop_IHME <- merge(pop_IHME, countries[,c("COUNTRY","ISO3")])
+pop_IHME <- pop_IHME[,c("ISO3","year","age_name","sex_name","val")]
+colnames(pop_IHME) <- c("ISO3", "YEAR", "AGE", "SEX", "POP")
+
+pop_1year <- pop_IHME
+pop_1year <- pop_1year[order(pop_1year$ISO3, pop_1year$YEAR, pop_1year$AGE, pop_1year$SEX), ] 
+
 ## WHO shapefiles
 map1 <- st_read("shp/general_2013.shp")
 map2 <- st_read("shp/maskline_general_2013.shp")
@@ -119,9 +161,10 @@ map3 <- st_read("shp/maskpoly_general_2013.shp")
 # countries <- FERG2:::countries
 # pop <- FERG2:::pop
 # life_exp <- FERG2:::life_exp
+# life_birth <- FERG2:::life_birth
 
 save(
-  countries,
-  pop, life_exp,life_birth,
+  countries, pop, pop_1year,
+  life_exp,life_birth,
   map1, map2, map3,
   file = "../R/sysdata.rda")
