@@ -130,6 +130,7 @@ pop_IHME <- pop_IHME[,c("location_name", "sex_name", "age_name","year", "val")]
 pop_IHME <- pop_IHME %>%
   mutate(COUNTRY = case_when(
     location_name == "Türkiye" ~ "Turkiye",
+    location_name == "Turkey" ~ "Turkiye",
     location_name == "Congo" ~ "Congo (the)",
     location_name == "Democratic Republic of the Congo" ~ "Congo (the Democratic Republic of the)",
     location_name == "Dominican Republic" ~ "Dominican Republic (the)",
