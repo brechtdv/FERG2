@@ -24,6 +24,7 @@ add_pop<-function (df) {
     summarise(POP = sum(POP))
   df <- left_join(df, x)
   rm(list = c("tot", "by", "x"))
+  df$ID_ROW <- NULL
   n <- sum(is.na(df$POP))
   if (n > 0) 
     warning(paste("Warning:", n, " rows have missing data for the population variable. Please check if ISO3 code is correctly specified and if the dates are included in the study field."))
