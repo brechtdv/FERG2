@@ -287,7 +287,7 @@ IHME_pop <- IHME_pop %>%
     age_name == "90-94 years" ~ "85-125",
     age_name == "95+ years" ~ "85-125"))
 
-IHME_pop$age_naem <- NULL
+IHME_pop$age_name <- NULL
 IHME_pop <- IHME_pop %>% 
   group_by(ISO3, YEAR, SEX, AGE) %>% 
   summarise(POP = sum(POP))
