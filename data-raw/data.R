@@ -22,13 +22,13 @@ countries <- readxl("WHO_countries_subregions.xlsx")
 ## 1950-2021 only available on Brecht laptop
 ## 1950-2023 downloaded from https://population.un.org/wpp/Download/Standard/CSV/ on 22/07/24
 ## 1950-2023 downloaded from https://population.un.org/wpp/Download/Standard/Mortality/ on 03/12/24 to add LE
+
 if (FALSE) {
 # pop <-
   # read.csv("WPP2022_Population1JanuaryBySingleAgeSex_Medium_1950-2021.csv")
 
 pop <-
   fread("WPP2024_Population1JanuaryBySingleAgeSex_Medium_1950-2023.csv.gz")
-
 
 pop <- subset(pop, ISO3_code %in% countries$ISO3)
 pop <- subset(pop, Time >= 1990)
@@ -82,6 +82,7 @@ life_exp <- LE
 write.csv(life_exp,
           row.names = FALSE,
           file = "WHO_life_expectancy_AGE_1990_2023.csv")
+
 ## UN WPP life birth data
 LB <-
   read_excel("WPP2024_FERT_F03_BIRTHS_BY_SINGLE_AGE_OF_MOTHER.xlsx", skip=16, col_types = "text")
@@ -252,7 +253,6 @@ IHME_pop <- IHME_pop %>%
     .default = location_name
   ))
 
-
 IHME_pop <- subset(IHME_pop, COUNTRY %in% countries$COUNTRY)
 IHME_pop <- merge(IHME_pop, countries[,c("COUNTRY","ISO3")])
 IHME_pop <- IHME_pop[,c("ISO3","year","age_name","sex_name","val")]
@@ -263,6 +263,7 @@ IHME_pop <- subset(IHME_pop, age_name %in% c("<1 year", "2-4 years", "5-9 years"
                                         "50-54 years", "55-59 years", "60-64 years", "65-69 years",
                                         "70-74 years", "75-79 years", "80-84 years", "85-89 years",
                                         "90-94 years", "95+ years"))
+
 IHME_pop <- IHME_pop %>% 
   mutate(AGE = case_when(
     age_name == "<1 year" ~ "0-1", 
@@ -300,6 +301,42 @@ map1 <- st_read("shp/general_2013.shp")
 map2 <- st_read("shp/maskline_general_2013.shp")
 map3 <- st_read("shp/maskpoly_general_2013.shp")
 
+## scale POP in pop_1year
+
+if (FALSE) {
+  countries <- FERG2:::countries
+  pop <- FERG2:::pop
+  life_exp <- FERG2:::life_exp
+  life_birth <- FERG2:::life_birth
+  pop_1year <- FERG2:::pop_1year
+  pop_IHME <- FERG2:::pop_IHME
+}
+
+head(pop_1year); head(pop)
+
+pop_1year_agg <- aggregate(POP ~ ISO3 + YEAR + SEX, pop_1year, sum)
+names(pop_1year_agg)[names(pop_1year_agg) == "POP"] <- "POP_IHME"
+head(pop_1year_agg)
+
+pop_sub1 <- subset(pop, AGE == 0)
+pop_sub1$AGE <- NULL
+names(pop_sub1)[names(pop_sub1) == "POP"] <- "POP_WPP"
+head(pop_sub1)
+
+pop_1year <- merge(pop_1year, pop_1year_agg)
+head(pop_1year)
+
+pop_1year <- merge(pop_1year, pop_sub1)
+head(pop_1year)
+
+pop_1year$POP_SCALED <-
+  pop_1year$POP * (pop_1year$POP_WPP / pop_1year$POP_IHME)
+head(pop_1year)
+
+pop_1year$POP_IHME <- NULL
+pop_1year$POP_WPP <- NULL
+
+
 ###
 ### SAVE DATA
 ###
@@ -314,6 +351,6 @@ map3 <- st_read("shp/maskpoly_general_2013.shp")
 save(
   countries, 
   pop, pop_1year, pop_IHME,
-  life_exp,life_birth,
+  life_exp, life_birth,
   map1, map2, map3,
   file = "../R/sysdata.rda")
