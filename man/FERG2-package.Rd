@@ -14,11 +14,11 @@ The \pkg{FERG2} package provides a series of data inputs and helper functions fo
   \tabular{ll}{
     Package:    \tab  FERG2\cr
     Type:       \tab  Package\cr
-    Version:    \tab  0.0.2\cr
-    Date:       \tab  2024-04-24\cr
+    Version:    \tab  0.0.3\cr
+    Date:       \tab  2025-04-07\cr
     Authors:    \tab  Brecht Devleesschauwer\cr
     Maintainer: \tab  Brecht Devleesschauwer <\email{brechtdv@gmail.com}>\cr
-    Depends:    \tab  R (>= 4.2.0)\cr
+    Depends:    \tab  R (>= 4.4.0)\cr
     License:    \tab  GPL (3)\cr
 }
 
