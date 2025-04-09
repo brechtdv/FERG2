@@ -14,8 +14,8 @@ The \pkg{FERG2} package provides a series of data inputs and helper functions fo
   \tabular{ll}{
     Package:    \tab  FERG2\cr
     Type:       \tab  Package\cr
-    Version:    \tab  0.0.3\cr
-    Date:       \tab  2025-04-07\cr
+    Version:    \tab  0.0.4\cr
+    Date:       \tab  2025-04-09\cr
     Authors:    \tab  Brecht Devleesschauwer\cr
     Maintainer: \tab  Brecht Devleesschauwer <\email{brechtdv@gmail.com}>\cr
     Depends:    \tab  R (>= 4.4.0)\cr
