@@ -165,10 +165,10 @@ IHME_pop_1 <-
 IHME_pop_2 <-
   read.csv("IHME-GBD_2021_DATA-95f2786f-2.csv")
 
-IHME_pop <- rbind(IHME_pop_1, IHME_pop_2)
-IHME_pop <- IHME_pop[,c("location_name", "sex_name", "age_name","year", "val")]
+pop_IHME <- rbind(IHME_pop_1, IHME_pop_2)
+pop_IHME <- pop_IHME[, c("location_name", "sex_name", "age_name", "year", "val")]
 
-IHME_pop <- IHME_pop %>%
+pop_IHME <- pop_IHME %>%
   mutate(COUNTRY = case_when(
     location_name == "Türkiye" ~ "Turkiye",
     location_name == "Turkey" ~ "Turkiye",
@@ -253,48 +253,52 @@ IHME_pop <- IHME_pop %>%
     .default = location_name
   ))
 
-IHME_pop <- subset(IHME_pop, COUNTRY %in% countries$COUNTRY)
-IHME_pop <- merge(IHME_pop, countries[,c("COUNTRY","ISO3")])
-IHME_pop <- IHME_pop[,c("ISO3","year","age_name","sex_name","val")]
-colnames(IHME_pop) <- c("ISO3", "YEAR", "age_name", "SEX", "POP")
-IHME_pop <- subset(IHME_pop, age_name %in% c("<1 year", "2-4 years", "5-9 years",
-                                        "10-14 years", "15-19 years", "20-24 years", "25-29 years",
-                                        "30-34 years", "35-39 years", "40-44 years", "45-49 years",
-                                        "50-54 years", "55-59 years", "60-64 years", "65-69 years",
-                                        "70-74 years", "75-79 years", "80-84 years", "85-89 years",
-                                        "90-94 years", "95+ years"))
+pop_IHME <- subset(pop_IHME, COUNTRY %in% countries$COUNTRY)
+pop_IHME <- merge(pop_IHME, countries[, c("COUNTRY", "ISO3")])
+pop_IHME <- pop_IHME[, c("ISO3", "year", "age_name", "sex_name", "val")]
+colnames(pop_IHME) <- c("ISO3", "YEAR", "AGE", "SEX", "POP")
+table(pop_IHME$AGE)
+pop_IHME <-
+  subset(pop_IHME,
+         AGE %in%
+           c("<1 year", "12-23 months", "2-4 years", "5-9 years",
+             "10-14 years", "15-19 years", "20-24 years", "25-29 years",
+             "30-34 years", "35-39 years", "40-44 years", "45-49 years",
+             "50-54 years", "55-59 years", "60-64 years", "65-69 years",
+             "70-74 years", "75-79 years", "80-84 years", "85-89 years",
+             "90-94 years", "95+ years"))
 
-IHME_pop <- IHME_pop %>% 
-  mutate(AGE = case_when(
-    age_name == "<1 year" ~ "0-1", 
-    age_name == "2-4 years"~ "2-4", 
-    age_name == "5-9 years" ~ "5-9",
-    age_name == "10-14 years" ~ "10-14",
-    age_name == "15-19 years" ~ "15-19",
-    age_name == "20-24 years" ~ "20-24",
-    age_name == "25-29 years" ~ "25-29",
-    age_name == "30-34 years" ~ "30-34",
-    age_name == "35-39 years" ~ "35-39",
-    age_name == "40-44 years" ~ "40-44",
-    age_name == "45-49 years" ~ "45-49",
-    age_name == "50-54 years" ~ "50-54",
-    age_name == "55-59 years" ~ "55-59",
-    age_name == "60-64 years" ~ "60-64",
-    age_name == "65-69 years" ~ "65-69",
-    age_name == "70-74 years" ~ "70-74",
-    age_name == "75-79 years" ~ "75-79",
-    age_name == "80-84 years" ~ "80-84",
-    age_name == "85-89 years" ~ "85-125",
-    age_name == "90-94 years" ~ "85-125",
-    age_name == "95+ years" ~ "85-125"))
-
-IHME_pop$age_name <- NULL
-IHME_pop <- IHME_pop %>% 
-  group_by(ISO3, YEAR, SEX, AGE) %>% 
-  summarise(POP = sum(POP))
-
-IHME_pop <- arrange(IHME_pop, ISO3, YEAR, SEX, readr::parse_number(AGE))
-pop_IHME <- IHME_pop
+# IHME_pop <- IHME_pop %>% 
+#   mutate(AGE = case_when(
+#     age_name == "<1 year" ~ "0-1", 
+#     age_name == "2-4 years"~ "2-4", 
+#     age_name == "5-9 years" ~ "5-9",
+#     age_name == "10-14 years" ~ "10-14",
+#     age_name == "15-19 years" ~ "15-19",
+#     age_name == "20-24 years" ~ "20-24",
+#     age_name == "25-29 years" ~ "25-29",
+#     age_name == "30-34 years" ~ "30-34",
+#     age_name == "35-39 years" ~ "35-39",
+#     age_name == "40-44 years" ~ "40-44",
+#     age_name == "45-49 years" ~ "45-49",
+#     age_name == "50-54 years" ~ "50-54",
+#     age_name == "55-59 years" ~ "55-59",
+#     age_name == "60-64 years" ~ "60-64",
+#     age_name == "65-69 years" ~ "65-69",
+#     age_name == "70-74 years" ~ "70-74",
+#     age_name == "75-79 years" ~ "75-79",
+#     age_name == "80-84 years" ~ "80-84",
+#     age_name == "85-89 years" ~ "85-125",
+#     age_name == "90-94 years" ~ "85-125",
+#     age_name == "95+ years" ~ "85-125"))
+# 
+# IHME_pop$age_name <- NULL
+# IHME_pop <- IHME_pop %>% 
+#   group_by(ISO3, YEAR, SEX, AGE) %>% 
+#   summarise(POP = sum(POP))
+# 
+# IHME_pop <- arrange(IHME_pop, ISO3, YEAR, SEX, readr::parse_number(AGE))
+# pop_IHME <- IHME_pop
 
 ## WHO shapefiles
 map1 <- st_read("shp/general_2013.shp")
