@@ -5,7 +5,8 @@
 plot_world <-
 function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
   legend.labs = NULL, legend.title = NULL, legend.ncol = 3, title.adj=0.5,
-  text.width = 20, integer.breaks = FALSE, breaks = NULL, diseasefree = NULL)  {
+  text.width = 20, integer.breaks = FALSE, breaks = NULL, diseasefree = NULL,
+  diseasefree.title = "Disease-free")  {
   # check arguments
   if (!(iso3 %in% names(x)))
     stop(sprintf("Input 'x' requires '%s' variable.", iso3))
@@ -39,8 +40,8 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     # Add disease-free countries if asked
     if(!is.null(diseasefree)){
       map1$DISEASEFREE <- diseasefree[["DISEASEFREE"]][match(map1$ISO_3_CODE, diseasefree[["COUNTRY"]])]
-      levels(cat) <- c(levels(cat), "Disease-free")
-      cat[map1$DISEASEFREE == 0] <- "Disease-free"
+      levels(cat) <- c(levels(cat), diseasefree.title)
+      cat[map1$DISEASEFREE == 0] <- diseasefree.title
       if (length(col.pal) == 1) {
         col <- RColorBrewer::brewer.pal(nlevels(cat)-1, col.pal)
         col <- c(col, "white")
