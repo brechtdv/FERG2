@@ -4,8 +4,9 @@
 
 plot_world <-
 function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds",
-  col.pal.inv = FALSE, cols = NULL, legend.dig.lab = 3L, legend.labs = NULL,
-  legend.title = NULL, legend.ncol = 3, title.adj = 0.5, text.width = 20,
+  col.pal.inv = FALSE, cols = NULL, col.br = "#6E6E6E", 
+  legend.dig.lab = 3L, legend.labs = NULL, legend.title = NULL,
+  legend.ncol = 3, title.adj = 0.5, text.width = 20,
   integer.breaks = FALSE, breaks = NULL, diseasefree = NULL,
   diseasefree.title = "Disease-free", na.countries = NULL)  {
   # check arguments
@@ -23,8 +24,8 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds",
   # settings
   col_na <- rgb(210, 210, 210, max = 255)
   col_bg <- rgb(224, 232, 255, max = 255)
-  col_br <- rgb(110, 110, 110, max = 255)
   col_lk <- rgb(190, 210, 255, max = 255)
+  col_br <- col.br
 
   # define colors
   if (is.numeric(x[[data]])) {
