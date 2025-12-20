@@ -3,10 +3,11 @@
 ## world map
 
 plot_world <-
-function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
-  legend.labs = NULL, legend.title = NULL, legend.ncol = 3, title.adj=0.5,
-  text.width = 20, integer.breaks = FALSE, breaks = NULL, diseasefree = NULL,
-  diseasefree.title = "Disease-free")  {
+function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds",
+  col.pal.inv = FALSE, cols = NULL, legend.dig.lab = 3L, legend.labs = NULL,
+  legend.title = NULL, legend.ncol = 3, title.adj = 0.5, text.width = 20,
+  integer.breaks = FALSE, breaks = NULL, diseasefree = NULL,
+  diseasefree.title = "Disease-free", na.countries = NULL)  {
   # check arguments
   if (!(iso3 %in% names(x)))
     stop(sprintf("Input 'x' requires '%s' variable.", iso3))
@@ -15,6 +16,9 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
 
   # merge data
   map1$DATA <- x[[data]][match(map1$ISO_3_CODE, x[[iso3]])]
+
+  # overwrite NA countries
+  map1$DATA[match(na.countries, map1$ISO_3_CODE)] <- NA
 
   # settings
   col_na <- rgb(210, 210, 210, max = 255)
@@ -27,23 +31,32 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     if (is.null(breaks)) {
       if (integer.breaks) {
         breaks <- unique(floor(pretty(map1$DATA)))
-        cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+        cat <-
+          cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE,
+              dig.lab = legend.dig.lab)
       } else {
         breaks <- pretty(map1$DATA)
-        cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+        cat <-
+          cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE,
+              dig.lab = legend.dig.lab)
       }
     }
     else {
-      cat <- cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE)
+      cat <-
+        cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE,
+            dig.lab = legend.dig.lab)
     }
     
     # Add disease-free countries if asked
     if(!is.null(diseasefree)){
-      map1$DISEASEFREE <- diseasefree[["DISEASEFREE"]][match(map1$ISO_3_CODE, diseasefree[["COUNTRY"]])]
+      map1$DISEASEFREE <-
+        diseasefree[["DISEASEFREE"]][
+          match(map1$ISO_3_CODE, diseasefree[["COUNTRY"]])]
       levels(cat) <- c(levels(cat), diseasefree.title)
       cat[map1$DISEASEFREE == 0] <- diseasefree.title
       if (length(col.pal) == 1) {
         col <- RColorBrewer::brewer.pal(nlevels(cat)-1, col.pal)
+        if (col.pal.inv) col <- rev(col)
         col <- c(col, "white")
       }
       else {
@@ -53,6 +66,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     else {
       if (length(col.pal) == 1) {
         col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
+        if (col.pal.inv) col <- rev(col)
       }
       else {
         col <- col.pal
@@ -68,6 +82,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     map1$DATA <- as.factor(map1$DATA)
     if (length(col.pal) == 1) {
       col <- RColorBrewer::brewer.pal(nlevels(map1$DATA), col.pal)
+      if (col.pal.inv) col <- rev(col)
     } else {
       col <- col.pal
     }
@@ -97,10 +112,14 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds", cols = NULL,
     box.col = NA, bg = NA, 
     legend = c(legend.labs, "Not applicable"),
     fill = c(col, col_na),
-    cex = .9, y.intersp = .9, x.intersp = 0.5, text.width = text.width,
-    ncol = legend.ncol, title.adj=title.adj)
+    cex = 0.9,
+    y.intersp = 0.9,
+    x.intersp = 0.5,
+    text.width = text.width,
+    ncol = legend.ncol,
+    title.adj = title.adj)
   
-  #  return breaks
+  # return breaks
   return(breaks)
 }
 
@@ -128,15 +147,14 @@ function(x, legend.ncol = 1, text.width=20, title.adj=0.5, ...) {
     if (breaks[1] == 0) 
       breaks[1] <- 1
     breaks <- c(0, breaks) 
-    col.pal <- RColorBrewer::brewer.pal(length(breaks) - 
-                                          2, "Greens") 
+    col.pal <- RColorBrewer::brewer.pal(length(breaks) - 2, "Greens") 
     col.pal <- c("white", col.pal) 
     legend.labs <- c(levels(cut(world$Freq, breaks, right = F, 
                                 include.lowest = T))) 
     legend.labs[1] <- "0" 
     plot_world(world, iso3 = "ISO3", data = "Freq", col.pal = col.pal,
                text.width = text.width, legend.labs = legend.labs, 
-               breaks = breaks, title.adj=title.adj, ...) #plot map
+               breaks = breaks, title.adj = title.adj, ...) #plot map
   }
 }
 
