@@ -1,7 +1,7 @@
 Package: FERG2
 Title: Data and Functions for the FERG2 Computational Framework
-Version: 0.0.6
-Date: 2025-12-20
+Version: 0.0.7
+Date: 2025-12-23
 Authors@R: person("Brecht", "Devleesschauwer", role = c("aut", "cre"),
 	              email = "brechtdv@gmail.com")
 Author: Brecht Devleesschauwer [aut, cre]
