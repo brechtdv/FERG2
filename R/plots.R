@@ -41,8 +41,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds",
           cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE,
               dig.lab = legend.dig.lab)
       }
-    }
-    else {
+    } else {
       cat <-
         cut(map1$DATA, breaks, right = FALSE, include.lowest = TRUE,
             dig.lab = legend.dig.lab)
@@ -59,25 +58,24 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds",
         col <- RColorBrewer::brewer.pal(nlevels(cat)-1, col.pal)
         if (col.pal.inv) col <- rev(col)
         col <- c(col, "white")
-      }
-      else {
+      } else {
         col <- col.pal
       }
-    }
-    else {
+    } else {
       if (length(col.pal) == 1) {
         col <- RColorBrewer::brewer.pal(nlevels(cat), col.pal)
         if (col.pal.inv) col <- rev(col)
-      }
-      else {
+      } else {
         col <- col.pal
       }
     }
     
     cols <- col[cat]
     
-    if (is.null(legend.labs))
+    if (is.null(legend.labs)) {
       legend.labs <- levels(cat)
+	  legend.labs <- gsub(",", ", ", legend.labs, fixed = TRUE)
+    }
 
   } else {
     map1$DATA <- as.factor(map1$DATA)
@@ -92,7 +90,7 @@ function(x, iso3 = "ISO3", data = "DATA", col.pal = "Reds",
     if (is.null(legend.labs))
       legend.labs <- levels(map1$DATA)
   }
-  legend.labs <- gsub(",", ", ", legend.labs, fixed=TRUE)
+
   cols[is.na(cols)] <- col_na
 
   # setup plot
