@@ -17,6 +17,12 @@ library(stringr)
 
 ## country definitions
 countries <- readxl("WHO_countries_subregions.xlsx")
+# Add official WHO names
+countries_WHO <- readxl("data_export_REFMART_REF_COUNTRY (2).xlsx")
+str(countries_WHO)
+countries_WHO <- countries_WHO[,c("CODE_ISO_3", "NAME_SHORT_EN")]
+names(countries_WHO) <- c("ISO3", "COUNTRY_WHO")
+countries <- left_join(countries, countries_WHO, by = "ISO3")
 
 ## UN WPP population data
 ## 1950-2021 only available on Brecht laptop
