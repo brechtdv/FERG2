@@ -24,9 +24,10 @@ countries_WHO <- countries_WHO[,c("CODE_ISO_3", "NAME_SHORT_EN")]
 names(countries_WHO) <- c("ISO3", "COUNTRY_WHO")
 countries <- left_join(countries, countries_WHO, by = "ISO3")
 # Add official WHO order
-countries_WHO <- readxl("data_export_REFMART_REF_COUNTRY (2).xlsx")
+countries_WHO <- readxl("WHO Member States.xlsx")
 str(countries_WHO)
-countries_WHO <- countries_WHO[,c("CODE_ISO_3", "CODE_ISO_NUMERIC")]
+countries_WHO$COUNTRIES_WHO_ORDER <- seq.int(nrow(countries_WHO))
+countries_WHO <- countries_WHO[,c("CODE_ISO_3", "COUNTRIES_WHO_ORDER")]
 names(countries_WHO) <- c("ISO3", "COUNTRY_WHO_ORDER")
 countries <- left_join(countries, countries_WHO, by = "ISO3")
 
