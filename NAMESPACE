@@ -4,6 +4,7 @@ import(ggplot2)
 import(sf)
 import(cowplot)
 import(viridis, viridis)
+import(whomapper)
 
 export(plot_world)
 export(plot_world_data)
