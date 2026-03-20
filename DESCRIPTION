@@ -9,3 +9,5 @@ Maintainer: Brecht Devleesschauwer <brechtdv@gmail.com>
 Description: A series of data inputs and helper functions for the FERG2 computational framework.
 Depends: R (>= 4.4.0)
 License: GPL-3
+Imports: RcolorBrewer, ggplot2, sf, cowplot, viridis
+Remotes: whocov/whomapper
