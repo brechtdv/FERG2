@@ -516,8 +516,8 @@ draw_border <- function(x, y, w, h) {
 ## world map WHO style with zooms
 
 plot_world_who_zoom <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "RdYlBu", col.pal.inv = FALSE,
-                                title = NULL, legend.dig.lab = 3L, legend.title = NULL,
-                                integer.breaks = FALSE, breaks = NULL, disclaimer = NULL,
+                                title = NULL, legend.dig.lab = 3L, legend.title = NULL, legend.ncol = 1,
+                                integer.breaks = FALSE, breaks = NULL, labels = NULL, disclaimer = NULL,
                                 disclaimer.pal = "Greys", na.countries = NULL){
   # WHO admin data
   who_adm0 <- whomapper::pull_sfs(adm_level = 0, query_server = TRUE) 
@@ -551,6 +551,12 @@ plot_world_who_zoom <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "R
       sfs_map$cat <- cut(sfs_map$DATA, breaks, right = FALSE, include.lowest = TRUE, 
                          dig.lab = legend.dig.lab)
     }
+  } else {
+    if (is.null(breaks)) { 
+      sfs_map$cat <- as.factor(sfs_map$DATA)
+    } else {
+      sfs_map$cat <- factor(sfs_map$DATA, levels = breaks)
+    }
   }
   breaks_cat <- levels(sfs_map$cat)
   
@@ -581,8 +587,10 @@ plot_world_who_zoom <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "R
   # Define palette for data and reverse if wanted
   if (col.pal %in% rownames(brewer.pal.info)){
     breaks_cols <- brewer.pal(length(breaks_cat), col.pal)
-  } else {
+  } else if (col.pal == "viridis") {
     breaks_cols <- viridis(length(breaks_cat), option = "D")
+  } else {
+    breaks_cols <- palette.colors(14, col.pal)
   }
   
   if (col.pal.inv) {
@@ -617,12 +625,38 @@ plot_world_who_zoom <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "R
   # Combine colors and add color for additional category
   cols <- c(breaks_cols, disclaimer_cols, dna_cols, na_cols)
   
+  # Labels
+  if (is.null(labels)){
+    legend_labels <- names(cols)
+  } else {
+    legend_labels <- c(labels, "Data not available", "Not applicable")
+  }
+  
+  # Parse into expressions for italic/plain rendering -> need to complete for other hazards
+  parsed_labels <- sapply(legend_labels, function(lbl) {
+    if (lbl %in% c("T. gondii congenital", "T. gondii acquired")) {
+      # Split into italic genus/species + plain descriptor
+      parts <- strsplit(lbl, " (?=congenital|acquired)", perl = TRUE)[[1]]
+      descriptor <- parts[2]
+      bquote(paste(italic("T. gondii"), plain(.(descriptor))))
+    } else if (lbl %in% c("Campylobacter", "Cryptosporidium", "Cyclospora",
+                          "E. histolytica", "Giardia", "Shigella", "V. cholerae",
+                          "Brucella", "Listeria", "C. botulinum", "T. cruzi",
+                          "E. granulosus", "E. multilocularis", "T. solium",
+                          "Ascaris", "Trichinella", "Clonorchis", "Fasciola",
+                          "O. felineus", "O. viverrini", "Paragonimus")) {
+      bquote(italic(.(lbl)))
+    } else {
+      bquote(plain(.(lbl)))
+    }
+  }, USE.NAMES = FALSE)
+  
   # Define countries in area that need a zoom
-  sfs_map <- sfs_map %>% 
-    mutate(FOCUS =  case_when(
-      iso_3_code %in% c("ATG", "BHS", "BRB", "DMA", "DOM", "HTI", "JAM", "KNA", "LCA", "VCT", "TTO") ~ "CARIBBEAN",
-      iso_3_code %in% c("ALB", "AUT", "GRC", "ISR", "JOR","MDA", "SVK") ~ "EUROPE",
-      .default = NA))
+  sfs_map$FOCUS <- if_else(sfs_map$iso_3_code %in% c("ATG", "BHS", "BRB", "DMA", "DOM", "HTI", "JAM", "KNA", "LCA", "VCT", "TTO"),
+                           "CARIBBEAN",
+                           if_else(sfs_map$iso_3_code %in% c("ALB", "AUT", "GRC", "ISR", "JOR","MDA", "SVK"),
+                                   "EUROPE",
+                                   NA))
   
   # Plot world and areas
   p_area <- list()
@@ -631,7 +665,8 @@ plot_world_who_zoom <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "R
     scale_fill_manual(values = cols,
                       breaks = names(cols),
                       limits = names(cols),
-                      guide  = guide_legend(reverse = FALSE, ncol = 1),
+                      labels = do.call(expression, parsed_labels),
+                      guide  = guide_legend(reverse = FALSE, ncol = legend.ncol),
                       drop   = FALSE) +
     labs(title = title, 
          fill = legend.title) + 
