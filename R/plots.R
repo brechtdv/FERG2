@@ -867,7 +867,7 @@ plot_world_who_zoom <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "R
   final_plot <- final_plot +
     draw_border(x_offset,                y_offset, europe_width,    zoom_height) +
     draw_border(x_offset + europe_width, y_offset, caribbean_width, zoom_height) +
-    draw_label("Balkans", x_offset + 0.005, y_offset + zoom_height - 0.005, 
+    draw_label("Balkan peninsula", x_offset + 0.005, y_offset + zoom_height - 0.005, 
                hjust = 0, vjust = 1, size = 10, fontface = "bold",color = "black") +
     draw_label("Caribbean", x_offset + europe_width + 0.005, y_offset + zoom_height - 0.005, 
                hjust = 0, vjust = 1, size = 10, fontface = "bold",color = "black")
