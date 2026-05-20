@@ -274,10 +274,12 @@ function(x, by = c("REG2", "REG1", "SUB2", "SUB1", "COUNTRY"), range = NULL) {
 plot_world_who <- function(x, iso3 = "COUNTRY", data = "DATA", col.pal = "RdYlBu", col.pal.inv = FALSE,
                            title = NULL, legend.dig.lab = 3L, legend.title = NULL, legend.ncol = 1, 
                            integer.breaks = FALSE, breaks = NULL, labels = NULL, disclaimer = NULL,
-                           disclaimer.pal = "Greys", na.countries = NULL){
+                           disclaimer.pal = "Greys", na.countries = NULL, who_adm0 = NULL){
   
-  # WHO admin data
-  who_adm0 <- whomapper::pull_sfs(adm_level = 0, query_server = TRUE) 
+  # WHO admin data, as it takes time to read, it can also be added to the function
+  if (is.null(who_adm0)){
+    who_adm0 <- whomapper::pull_sfs(adm_level = 0, query_server = TRUE) 
+  }
   sfs_map <- who_adm0$adm0
   # sfs_map <- subset(sfs_map, iso_3_code != "XKX")
   
